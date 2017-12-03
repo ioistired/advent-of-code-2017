@@ -1,46 +1,42 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
+from math import ceil, sqrt
 import itertools
 import sys
 
+i = 1j
 
-class SpiralMemory(list):
-	def odd_nums(self):
-		yield from filter(lambda n: n % 2 == 1, itertools.count())
 
-	def get_coordinate(self, n):
-		self.append((0, 0))
-		self.append((1, 0))
-		self.append((1, 1))
-		self.append((0, 1))
-		self.append((-1, 1))
-		self.append((-1, 0))
-		self.append((-1, -1))
-		self.append((0, -1))
-		self.append((1, -1))
-		self.append((2, -1))
-		self.append(())
-		self.append(())
-		self.append(())
-		self.append(())
-		self.append(())
-		self.append(())
-		self.append(())
-		self.append(())
-		self.append(())
-		self.append(())
-		self.append(())
-		self.append(())
-		self.append(())
-		self.append(())
-		self.append(())
+#def get_coordinate(n):
+#	# https://web.archive.org/web/20141202041502/http://danpearcymaths.wordpress.com/2012/09/30/infinity-programming-in-geogebra-and-failing-miserably/
+#	p = _p(n)
+#	# the formula he gave starts by going up, but we start by going right
+#	# therefore, we need to multiply by -i to rotate -90°
+#	z = (n-floor(p**2/4))*i**p + (floor((p+2)/4)-(floor((p+1)/4)*i))*i**(p-1)
+#	return int(z.real), int(z.imag)
 
-	def largest_num_in_square(self, n):
-		# 1, 9, 25, 49, ...
-		return (2*n+1)**2
-		return 4*n**2+10*n+7
 
+#def _p(n):
+#	return floor((4*n+1)**0.5)
+
+def get_coordinate(n):
+		k=ceil((sqrt(n)-1)/2)
+		t=2*k+1
+		m=t**2
+		t=t-1
+		if n >= m - t:
+			return k - (m-n), -k
+		else:
+			m -= t
+		if n >= m - t:
+			return -k, -k+(m-n)
+		else:
+			m -= t
+		if n >= m-t:
+			return -k+(m-n), k
+		else:
+			return k, k-(m-n-t)
 
 
 def manhattan_distance(square):
