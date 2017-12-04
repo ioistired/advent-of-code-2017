@@ -2,7 +2,6 @@
 # encoding: utf-8
 
 from math import ceil, sqrt
-import itertools
 import sys
 
 
