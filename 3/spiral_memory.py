@@ -4,6 +4,7 @@
 from collections import defaultdict, Iterable, namedtuple
 from copy import copy
 from math import ceil, floor, sqrt
+import operator as operators
 import sys
 
 
@@ -69,19 +70,38 @@ class Vector(tuple):
 		# instead of tuple
 		return super().__new__(cls, args)
 
-	def __add__(self, other):
+	def __oper(self, other, operator):
 		if isinstance(other, Iterable):
 			new = list(other)
 			for i, value in enumerate(self):
 				try:
-					new[i] += value
+					new[i] = operator(new[i], value)
 				except IndexError:
 					raise ValueError('operands must have the same dimensions')
 			return tuple(new)
 		else:
 			raise TypeError('operand must be iterable')
 
+	def __add__(self, other):
+		return self.__oper(other, operators.add)
+
 	__radd__ = __add__
+
+	def __sub__(self, other):
+		return self.__oper(other, operators.sub)
+
+	# subtraction is not commutative, so will this work?
+	#__rsub__ = __sub__
+
+	def __mul__(self, other):
+		return self.__oper(other, operators.mul)
+
+	#__rmul__ = __mul__
+
+	def __truediv__(self, other):
+		return self.__oper(other, operators.truediv)
+
+	#__rtruediv__ = __truediv__
 
 
 # part2
@@ -93,7 +113,7 @@ def stress_test(n):
 	i = 0
 	while vals[current] < n:
 		current = get_direction(i) + current
-		vals[current] = sum(vals[neighbor] for neighbor in get_neighbors(current))
+		vals[current] = sum(map(vals.__getitem__, get_neighbors(current)))
 		i += 1
 	return vals[current]
 
