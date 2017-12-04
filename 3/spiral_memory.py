@@ -73,7 +73,10 @@ class Vector(tuple):
 		if isinstance(other, Iterable):
 			new = list(other)
 			for i, value in enumerate(self):
-				new[i] += value
+				try:
+					new[i] += value
+				except IndexError:
+					raise ValueError('operands must have the same dimensions')
 			return tuple(new)
 		else:
 			raise TypeError('operand must be iterable')
