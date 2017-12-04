@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-from math import ceil, sqrt
+from collections import defaultdict, Iterable, namedtuple
+from copy import copy
+from math import ceil, floor, sqrt
 import sys
 
 
@@ -24,9 +26,73 @@ def get_coordinate(n):
 			return k, k-(m-n-t)
 
 
+def ismutable(x):
+	try:
+		hash(x)
+	except:
+		return True
+	else:
+		return False
+
+
 def manhattan_distance(square):
 	x2, y2 = get_coordinate(square)
 	return abs(x2 - 0) + abs(y2 - 0)
+
+
+def get_direction(n):
+	"""which way to move to get to position n in the Ulam spiral"""
+	return {
+		1: Vector([1, 0]),
+		2: Vector([0, 1]),
+		3: Vector([-1, 0]),
+		4: Vector([0, -1])
+	}[floor(sqrt(4*n + 1) + 3) % 4 + 1]
+
+
+def get_neighbors(coords):
+	neighbors = []
+	for Δx in range(-1, 2):
+		for Δy in range(-1, 2):
+			if (Δx, Δy) != (0, 0):
+				neighbors.append(coords + Vector((Δx, Δy)))
+	return neighbors
+
+
+class Vector(tuple):
+	def __new__(cls, *args):
+		# if they try to construct it like old-style tuple
+		# e.g. Vector([1, 2]), it should still work
+		if len(args) == 1 and isinstance(args[0], Iterable):
+			return cls.__new__(cls, *args[0])
+		# allow construction via Vector(1, 2)
+		# instead of tuple
+		return super().__new__(cls, args)
+
+	def __add__(self, other):
+		if isinstance(other, Iterable):
+			new = list(other)
+			for i, value in enumerate(self):
+				new[i] += value
+			return tuple(new)
+		else:
+			raise TypeError('operand must be iterable')
+
+	__radd__ = __add__
+
+
+# part2
+def stress_test(n):
+	"""return the first value written that's larger than n"""
+	current = (0, 0)
+	vals = defaultdict(lambda: 0)
+	vals[current] = 1 # given
+	i = 0
+	while vals[current] < n:
+		current = get_direction(i) + current
+		vals[current] = sum(vals[neighbor] for neighbor in get_neighbors(current))
+		i += 1
+	return vals[current]
 
 
 def main():
@@ -34,12 +100,13 @@ def main():
 		print('Usage:', sys.argv[0], '<1|2> < input', file=sys.stderr)
 		sys.exit(1)
 	mode = sys.argv[1]
+	puzzle_input = 289326
 	if mode == '1':
-		square = 289326
+		func = manhattan_distance
 	elif mode == '2':
-		...
-	print(manhattan_distance(square))
+		func = stress_test
 
+	print(func(puzzle_input))
 
 if __name__ == '__main__':
 	main()
