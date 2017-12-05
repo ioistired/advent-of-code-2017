@@ -3,7 +3,7 @@
 
 import sys
 
-from ben import input_iter
+
 def answer(instrs, day2=False):
 	instrs = list(map(int, conv(instrs.split('\n'))))
 	pos = 0
@@ -21,8 +21,10 @@ def answer(instrs, day2=False):
 
 	return i
 
+
 def conv(l):
 	return (int(x) for x in l if x)
+
 
 def main():
 	if len(sys.argv) == 1:
