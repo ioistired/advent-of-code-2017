@@ -2,26 +2,27 @@
 # encoding: utf-8
 
 import sys
-from collections import Counter
 
 from ben import input_iter
 
-def valid(passphrase):
-	counter = Counter()
+def has_duplicates(passphrase):
+	seen_words = set()
 	for word in passphrase.split():
-		counter.update([word])
-		if counter[word] > 1:
-			return False
-	return True
+		if word in seen_words:
+			return True
+		seen_words.add(word)
+
+	return False
 
 
 def has_anagram(passphrase):
-	passphrases = Counter()
+	seen_words = set()
 	for word in passphrase.split():
 		word = tuple(sorted(word)) # don't ask
-		passphrases.update([word])
-		if passphrases[word] > 1:
+		if word in seen_words:
 			return True
+		seen_words.add(word)
+
 	return False
 
 
@@ -30,11 +31,11 @@ def main():
 		print('Usage:', sys.argv[0], '<1|2> < input', file=sys.stderr)
 		sys.exit(1)
 	mode = sys.argv[1]
-	valid_passphrases = (passphrase for passphrase in input_iter() if valid(passphrase))
+	valid_passphrases = (passphrase for passphrase in input_iter() if not has_duplicates(passphrase))
 	if mode == '1':
-		print(len(valid_passphrases))
+		print(len(list(valid_passphrases)))
 	elif mode == '2':
-		print(len([p for p in valid_passphrases if not has_anagram(p)]))
+		print(sum(not has_anagram(p) for p in valid_passphrases))
 
 
 if __name__ == '__main__':
