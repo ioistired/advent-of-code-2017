@@ -10,11 +10,16 @@ def answer(lens, day2, list_size=256):
 	lens = list(map(int, lens.split(',')))
 	current_pos = 0
 	skip_size = 0
+	print(l)
 
 	for length in lens:
-		l[current_pos:current_pos+length] = l[current_pos+length:current_pos:-1]
+		for i in range(current_pos, current_pos+length):
+			l[i] = l[current_pos+length-i]
+		#l[current_pos:current_pos+length] = reversed(l[current_pos:current_pos+length])
 		current_pos += length + skip_size
 		skip_size += 1
+		print(l, file=sys.stderr)
+	#print(l, file=sys.stderr)
 	return l[0]*l[1]
 
 

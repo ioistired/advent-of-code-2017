@@ -4,8 +4,17 @@
 class CircularList(list):
 	def __getitem__(self, x):
 		if isinstance(x, slice):
-			return CircularList([self[x] for x in self._rangeify(x)])
-		return super().__getitem__(x % len(self))
+			return CircularList(self[x] for x in self._rangeify(x))
+		return super().__getitem__(self._wrap(x))
+
+	def __setitem__(self, key, value):
+		if isinstance(key, slice):
+			...
+		else:
+			super().__setitem__(self._wrap(key), value)
+
+	def _wrap(self, x):
+		return x % len(self)
 
 	def _rangeify(self, slice):
 		start, stop, step = slice.start, slice.stop, slice.step
@@ -17,7 +26,8 @@ class CircularList(list):
 			step = 1
 		if step < 0:
 			start, stop = stop-1, start-1
-		return range(start, stop, step)
+		# stop at the end, because the new slice shouldn't repeat
+		return range(start, max(len(self), stop), step)
 
 def captcha(x, step):
 	t = CircularList(map(int, x))
