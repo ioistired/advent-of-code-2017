@@ -14,8 +14,8 @@ def main():
 	if len(sys.argv) == 1:
 		print('Usage:', sys.argv[0], '<1|2> < input', file=sys.stderr)
 		sys.exit(1)
-	print(answer(sys.stdin.read(), sys.argv[1] == '2')
-	print(answer(input_iter(), sys.argv[1] == '2')
+	print(answer(sys.stdin.read(), sys.argv[1] == '2'))
+	print(answer(input_iter(), sys.argv[1] == '2'))
 
 
 if __name__ == '__main__':
