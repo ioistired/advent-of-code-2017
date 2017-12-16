@@ -6,6 +6,10 @@ import sys
 from ben import input_iter
 
 
+def status_line(*args):
+	print(*args, file=sys.stderr, end='\b'*len('\n'.join(map(str, args))))
+
+
 def do_until(x, func, condition):
 	while True:
 		x = func(x)
@@ -32,7 +36,7 @@ def answer(data, day2):
 
 	score = 0
 	for i in range(5_000_000 if day2 else 40_000_000):
-		print(i, file=sys.stderr, end='\b'*len(str(i)))
+		status_line(i)
 		if cmp(next(a), next(b)):
 			score += 1
 	# sometimes the status line isn't cleared fully
@@ -44,7 +48,6 @@ def answer(data, day2):
 
 def cmp(a, b):
 	return a & 0xFFFF == b & 0xFFFF
-
 
 
 def main():
