@@ -1,34 +1,39 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
+from collections import deque
 from string import ascii_lowercase
 import sys
 
 from ben import input_iter
 
 
-def answer(moves, day2, size=16):
+def dance(moves, size=16, iterations=1):
 	moves = moves.split(',')
-	progs = ascii_lowercase[:size]
+	progs = deque(ascii_lowercase[:size])
 
-	for move in moves:
-		print(move)
-		if move[0] == 's':
-			progs = spin(progs, int(move[1:]))
-		if move[0] == 'x':
-			progs = exchange(progs, *map(int, move[1:].split('/')))
-		if move[0] == 'p':
-			progs = partner(progs, *move[1:].split('/'))
+	for i in range(iterations):
+		for move in moves:
+			if move[0] == 's':
+				progs = spin(progs, int(move[1:]))
+			if move[0] == 'x':
+				progs = exchange(progs, *map(int, move[1:].split('/')))
+			if move[0] == 'p':
+				progs = partner(progs, *move[1:].split('/'))
+		if moves == ascii_lowercase[:size]:
+			return i+1
 
-	if day2:
-		...
-	return progs
+	return ''.join(progs)
+
+
+def part2(moves, size=16):
+	cycle = dance(moves, size, 10**9)
+	enough = 10**9 % cycle
+	return dance(moves, size, enough)
 
 
 def spin(data, x):
-	if x == 1:
-		return data[-1] + data[:-1]
-	return data[x-1:] + data[:x-1]
+	return data[-x:] + data[:-x]
 
 
 def exchange(data, a, b):
@@ -46,7 +51,12 @@ def main():
 	if len(sys.argv) == 1:
 		print('Usage:', sys.argv[0], '<1|2> < input', file=sys.stderr)
 		sys.exit(1)
-	print(answer(sys.stdin.read().strip(), sys.argv[1] == '2'))
+	mode = sys.argv[1]
+	if mode == '1':
+		func = dance
+	if mode == '2':
+		func = part2
+	print(func(sys.stdin.read().strip()))
 
 
 if __name__ == '__main__':
